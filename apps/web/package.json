@@ -14,11 +14,13 @@
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",
     "@remix-run/serve": "^2.9.1",
+    "@unocss/reset": "^0.59.4",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.1.185",
     "@precis/eslint-config": "workspace:*",
     "@precis/typescript-config": "workspace:*",
     "@remix-run/dev": "^2.9.1",
@@ -33,6 +35,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "typescript": "^5.1.6",
+    "unocss": "^0.59.4",
     "vite": "^5.1.0",
     "vite-tsconfig-paths": "^4.2.1"
   },

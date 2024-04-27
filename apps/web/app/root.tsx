@@ -5,6 +5,10 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import "@unocss/reset/tailwind.css";
+// eslint-disable-next-line import/no-unresolved
+import "virtual:uno.css";
+import { Navbar } from "./components/Navbar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,8 +19,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
+      <body className="bg-gray-50">
+        <Navbar />
+        <main className="max-w-7xl mx-auto">{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
