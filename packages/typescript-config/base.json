@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "strict": true
+  }
+}

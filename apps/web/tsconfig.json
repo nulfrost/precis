@@ -1,0 +1,4 @@
+{
+  "extends": "@precis/typescript-config/remix.json",
+  "exclude": ["node_modules"]
+}

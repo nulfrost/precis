@@ -1,0 +1,4 @@
+{
+  "extends": "@precis/typescript-config/api.json",
+  "exclude": ["node_modules"]
+}

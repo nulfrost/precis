@@ -1,0 +1,24 @@
+{
+  "name": "precis",
+  "private": true,
+  "description": "Add a guestbook to your website with a simple API",
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx}\""
+  },
+  "keywords": ["guestbook", "api", "bun", "remix"],
+  "author": "Dane Miller <khadane.miller@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@precis/eslint-config": "workspace:*",
+    "@precis/typescript-config": "workspace:*",
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.3"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=18"
+  }
+}
