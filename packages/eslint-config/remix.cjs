@@ -10,7 +10,6 @@ const project = resolve(process.cwd(), "tsconfig.json");
 
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
-  root: true,
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
@@ -23,7 +22,7 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  ignorePatterns: ["!**/.server", "!**/.client", ".*.js"],
 
   // Base config
   extends: ["eslint:recommended"],

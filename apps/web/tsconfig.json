@@ -1,4 +1,12 @@
 {
   "extends": "@precis/typescript-config/remix.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/.server/**/*.ts",
+    "**/.server/**/*.tsx",
+    "**/.client/**/*.ts",
+    "**/.client/**/*.tsx"
+  ],
   "exclude": ["node_modules"]
 }
