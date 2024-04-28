@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 
-import * as schema from "@/drizzle/schema";
+import * as schema from "@/db/drizzle/schema";
 
 // For production we'll use Turso
 const sqlite = createClient({

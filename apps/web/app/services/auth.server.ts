@@ -1,5 +1,5 @@
 import { Authenticator } from "remix-auth";
-import { sessionStorage } from "~/services/session.server";
+import { sessionStorage } from "@/web/services/session.server";
 import { schema, db, eq, type User } from "@precis/database";
 import { GitHubStrategy } from "remix-auth-github";
 
@@ -13,15 +13,13 @@ const gitHubStrategy = new GitHubStrategy(
   },
   async ({ profile }) => {
     // check if user exists in the database
-    const existingUser = await db.query.users
-      .findFirst({
-        where: eq(schema.users.username, profile.displayName),
-        columns: {
-          id: true,
-          username: true,
-        },
-      })
-      .catch((error: unknown) => console.error(error));
+    const existingUser = await db.query.users.findFirst({
+      where: eq(schema.users.username, profile.displayName),
+      columns: {
+        id: true,
+        username: true,
+      },
+    });
 
     // if user does not exist, create a new user
     if (!existingUser) {
@@ -33,7 +31,7 @@ const gitHubStrategy = new GitHubStrategy(
           username: schema.users.username,
         });
 
-      return newlyCreatedUser.at(0);
+      return newlyCreatedUser[0];
     }
     return existingUser;
   },

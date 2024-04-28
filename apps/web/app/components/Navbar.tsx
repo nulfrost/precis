@@ -1,8 +1,8 @@
+import { type User } from "@precis/database";
 import { useFetcher } from "@remix-run/react";
-import { GitHubProfile } from "remix-auth-github";
 
 interface NavbarProps {
-  user: GitHubProfile | null;
+  user: User | null;
 }
 
 export function Navbar(props: NavbarProps) {
