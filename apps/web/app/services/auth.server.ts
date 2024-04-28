@@ -1,6 +1,6 @@
 import { Authenticator } from "remix-auth";
 import { sessionStorage } from "~/services/session.server";
-import { schema, db, eq, type User } from "database";
+import { schema, db, eq, type User } from "@precis/database";
 import { GitHubStrategy } from "remix-auth-github";
 
 export const authenticator = new Authenticator<User>(sessionStorage);
@@ -21,7 +21,7 @@ const gitHubStrategy = new GitHubStrategy(
           username: true,
         },
       })
-      .catch((error) => console.error(error));
+      .catch((error: unknown) => console.error(error));
 
     // if user does not exist, create a new user
     if (!existingUser) {
@@ -32,7 +32,8 @@ const gitHubStrategy = new GitHubStrategy(
           id: schema.users.id,
           username: schema.users.username,
         });
-      return newlyCreatedUser[0];
+
+      return newlyCreatedUser.at(0);
     }
     return existingUser;
   },
