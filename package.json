@@ -10,6 +10,7 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "push": "dotenv -- turbo db:push",
+    "migrate": "dotenv -- turbo db:migrate",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "prepare": "husky"
   },

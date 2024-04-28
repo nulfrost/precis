@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1714316098958,
+      "tag": "0000_slimy_electro",
+      "breakpoints": true
+    }
+  ]
+}
