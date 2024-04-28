@@ -1,0 +1,14 @@
+{
+  "name": "database",
+  "version": "0.0.1",
+  "dependencies": {
+    "@libsql/client": "^0.6.0",
+    "drizzle-orm": "^0.30.9"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.17"
+  }
+}
