@@ -10,8 +10,17 @@
       "dependsOn": ["^lint"]
     },
     "dev": {
+      "dependsOn": ["^db:push"],
       "cache": false,
       "persistent": true,
+      "dotEnv": [".env"]
+    },
+    "db:migrate": {
+      "cache": false,
+      "dotEnv": [".env"]
+    },
+    "db:push": {
+      "cache": false,
       "dotEnv": [".env"]
     }
   }

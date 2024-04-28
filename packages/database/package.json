@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "dependencies": {
     "@libsql/client": "^0.6.0",
+    "@paralleldrive/cuid2": "^2.2.2",
     "drizzle-orm": "^0.30.9"
+  },
+  "scripts": {
+    "db:migrate": "",
+    "db:push": "drizzle-kit push:sqlite"
   },
   "exports": {
     ".": "./src/index.ts"
