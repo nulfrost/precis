@@ -22,6 +22,10 @@
     "db:push": {
       "cache": false,
       "dotEnv": [".env"]
+    },
+    "db:studio": {
+      "cache": false,
+      "dotEnv": [".env"]
     }
   }
 }
