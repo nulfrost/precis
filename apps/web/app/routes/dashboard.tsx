@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useRouteLoaderData } from "@remix-run/react";
-import { authenticator } from "~/services/auth.server";
-import { loader as rootLoader } from "~/root";
+import { authenticator } from "@/web/services/auth.server";
+import { loader as rootLoader } from "@/web/root";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await authenticator.isAuthenticated(request, {

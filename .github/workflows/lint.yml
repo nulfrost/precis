@@ -1,0 +1,39 @@
+name: ⬣ Lint repository
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: ⬣ Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🔨 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          cache-dependency-path: ./package.json
+          node-version: 16
+
+      - name: 📥 Install deps
+        run: pnpm install
+
+      - name: 🔬 Lint
+        run: pnpm lint

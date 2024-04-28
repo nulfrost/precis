@@ -13,6 +13,7 @@
     "migrate": "dotenv -- turbo db:migrate",
     "dev:studio": "dotenv -- turbo dev --filter database",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "typecheck": "tsc",
     "prepare": "husky"
   },
   "keywords": ["guestbook", "api", "bun", "remix"],
@@ -21,13 +22,14 @@
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
-    "@precis/eslint-config": "workspace:*",
     "@precis/database": "workspace:*",
+    "@precis/eslint-config": "workspace:*",
     "@precis/typescript-config": "workspace:*",
     "dotenv-cli": "^7.4.1",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
-    "turbo": "^1.13.3"
+    "turbo": "^1.13.3",
+    "typescript": "^5.4.5"
   },
   "packageManager": "pnpm@9.0.6",
   "engines": {
