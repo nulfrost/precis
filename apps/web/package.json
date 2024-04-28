@@ -17,7 +17,9 @@
     "@unocss/reset": "^0.59.4",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "remix-auth": "^3.6.0",
+    "remix-auth-github": "^1.7.0"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.1.185",

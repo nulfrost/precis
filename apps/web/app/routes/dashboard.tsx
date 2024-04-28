@@ -1,4 +1,17 @@
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { authenticator } from "~/services/auth.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const user = await authenticator.isAuthenticated(request, {
+    failureRedirect: "/",
+  });
+  return { user };
+}
+
 export default function Dashboard() {
+  const { user } = useLoaderData<typeof loader>();
+  console.log({ user });
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -9,7 +22,9 @@ export default function Dashboard() {
         </button> */}
       </div>
       <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6 mb-4">
-        <h2 className="font-semibold text-lg">Dane&apos;s Guestbook</h2>
+        <h2 className="font-semibold text-lg">
+          {user?.displayName}&apos;s guestbook
+        </h2>
         <p className="text-gray-500 mb-4">
           Welcome to your guestbook! You will be able to manage messages as well
           as your guestbook settings on this page.
@@ -29,7 +44,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-      <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
+      {/* <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
         <h2 className="font-semibold text-lg">Delete Guestbook</h2>
         <p className="text-gray-500 mb-4">
           Deleting your guestbook will permanently remove all of your messages,
@@ -42,7 +57,7 @@ export default function Dashboard() {
           <span>Delete guestbook</span>
           <span className="h-4 w-4 i-lucide-trash inline-block"></span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
