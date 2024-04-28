@@ -3,7 +3,9 @@ import { text, sqliteTable } from "drizzle-orm/sqlite-core";
 import { createId } from "@paralleldrive/cuid2";
 
 export const users = sqliteTable("users", {
-  id: text("id").$defaultFn(() => createId()),
+  id: text("id")
+    .$defaultFn(() => createId())
+    .primaryKey(),
   username: text("username"),
   created_at: text("created_at")
     .notNull()
@@ -14,7 +16,9 @@ export const users = sqliteTable("users", {
 });
 
 export const guestbooks = sqliteTable("guestbooks", {
-  id: text("id").$defaultFn(() => createId()),
+  id: text("id")
+    .$defaultFn(() => createId())
+    .primaryKey(),
   api_key: text("api_key"),
   api_url: text("api_url"),
   created_at: text("created_at")
@@ -27,7 +31,9 @@ export const guestbooks = sqliteTable("guestbooks", {
 });
 
 export const messages = sqliteTable("messages", {
-  id: text("id").$defaultFn(() => createId()),
+  id: text("id")
+    .$defaultFn(() => createId())
+    .primaryKey(),
   username: text("name").notNull(),
   message: text("message").notNull(),
   created_at: text("created_at")

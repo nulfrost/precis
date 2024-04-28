@@ -12,6 +12,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Dashboard() {
   const data = useRouteLoaderData<typeof rootLoader>("root");
+  console.log({ data });
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -23,7 +24,7 @@ export default function Dashboard() {
       </div>
       <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6 mb-4">
         <h2 className="font-semibold text-lg">
-          {data?.user?.displayName}&apos;s guestbook
+          {data?.user?.username}&apos;s guestbook
         </h2>
         <p className="text-gray-500 mb-4">
           Welcome to your guestbook! You will be able to manage messages as well
