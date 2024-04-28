@@ -16,8 +16,8 @@
     "@remix-run/serve": "^2.9.1",
     "@unocss/reset": "^0.59.4",
     "isbot": "^4.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "18.3.0-canary-0210f0b08-20230525",
+    "react-dom": "18.3.0-canary-0210f0b08-20230525",
     "remix-auth": "^3.6.0",
     "remix-auth-github": "^1.7.0"
   },
