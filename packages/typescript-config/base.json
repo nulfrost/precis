@@ -12,8 +12,7 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/web/*": ["../../apps/web/app/*"],
-      "@/db/*": ["../database/src/*"]
+      "@/web/*": ["../../apps/web/app/*"]
     }
   }
 }
