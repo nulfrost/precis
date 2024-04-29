@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 
-import * as schema from "@/db/drizzle/schema";
+import * as schema from "../src/drizzle/schema";
 
 // For production we'll use Turso
 const sqlite = createClient({
@@ -12,5 +12,5 @@ const db = drizzle(sqlite, { schema });
 
 export type User = typeof schema.users.$inferInsert;
 
-export { db, schema };
 export * from "drizzle-orm";
+export { db, schema };

@@ -9,11 +9,6 @@
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
-    "strict": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/web/*": ["../../apps/web/app/*"],
-      "@/db/*": ["../database/src/*"]
-    }
+    "strict": true
   }
 }
