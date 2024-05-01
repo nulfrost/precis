@@ -1,21 +1,20 @@
-name: Typecheck
+name: ⬣ Deploy
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Typecheck", "Lint", "Format"]
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  typecheck:
-    name: ⬣ Typecheck
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
@@ -30,10 +29,12 @@ jobs:
         with:
           cache: pnpm
           cache-dependency-path: ./package.json
-          node-version: 16
+          node-version: 18
 
       - name: 📥 Install deps
         run: pnpm install
 
-      - name: 🔬 Lint
-        run: pnpm typecheck
+      - name: Deploy
+        run: |
+          echo "Deploying..."
+          echo "Deployed!"
