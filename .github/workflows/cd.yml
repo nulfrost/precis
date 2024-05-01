@@ -3,6 +3,12 @@ name: ⬣ Deploy
 on:
   workflow_run:
     workflows: ["Typecheck", "Lint", "Format"]
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
     types:
       - completed
 
