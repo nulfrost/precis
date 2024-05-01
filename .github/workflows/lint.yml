@@ -1,4 +1,4 @@
-name: ⬣ Lint repository
+name: Lint
 
 on:
   push:

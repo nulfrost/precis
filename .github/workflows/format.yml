@@ -1,4 +1,4 @@
-name: ⬣ Format repository
+name: Format
 
 on:
   push:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  format:
     name: ⬣ Format
     runs-on: ubuntu-latest
     steps:
