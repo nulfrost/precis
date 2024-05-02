@@ -2,6 +2,7 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { useRouteLoaderData } from "@remix-run/react";
 import { authenticator } from "@/web/services/auth.server";
 import { loader as rootLoader } from "@/web/root";
+import { useState } from "react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await authenticator.isAuthenticated(request, {
@@ -12,7 +13,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Dashboard() {
   const data = useRouteLoaderData<typeof rootLoader>("root");
-  console.log({ data });
+  const [isCopiedToClipboard, setIsCopiedToClipboard] = useState(false);
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -30,18 +31,63 @@ export default function Dashboard() {
           Welcome to your guestbook! You will be able to manage messages as well
           as your guestbook settings on this page.
         </p>
-        <div className="flex justify-center bg-gray-50 border border-dashed border-gray-200 rounded-md py-10 items-center flex-col">
-          <h2 className="font-bold text-lg mb-2">No guestbook yet</h2>
-          <p className="text-gray-500 mb-4 max-w-[60ch] text-center">
-            Creating a guestbook will give you an API key as well as a unique
-            endpoint you can use to add messages to your guestbook.
-          </p>
+        <span className="inline-block font-bold text-sm uppercase mb-1">
+          API Url
+        </span>
+        <div className="flex items-center mb-4">
+          <span className="text-gray-500 items-center bg-gray-100 p-3 inline-block rounded-s-md border border-gray-300 border-r-none">
+            https://precis.dev/api/v1/guestbook/
+          </span>
+          <input
+            type="text"
+            name="url"
+            disabled
+            id="url"
+            value={`${data?.user?.username}`}
+            className="border border-gray-300 rounded-e-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3"
+          />
           <button
-            className="bg-indigo-600 text-white rounded-md py-2 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) text-sm hover:bg-indigo-500 duration-150 flex items-center gap-2"
-            onClick={() => alert("should open a modal")}
+            aria-label="Copy guestbook api url to clipboard"
+            disabled={isCopiedToClipboard}
+            aria-disabled={isCopiedToClipboard}
+            className="bg-indigo-600 text-white rounded-lg py-4 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-indigo-500 duration-150 flex items-center ml-1"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `https://precis.dev/api/v1/guestbook/${data?.user?.username}`,
+              );
+              setIsCopiedToClipboard(true);
+              setTimeout(() => {
+                setIsCopiedToClipboard(false);
+              }, 4000);
+            }}
           >
-            <span>create guestbook</span>
-            <span className="h-4 w-4 i-lucide-plus inline-block"></span>
+            {isCopiedToClipboard ? (
+              <span className={`h-5 w-5 i-lucide-check inline-block`}></span>
+            ) : (
+              <span className={`h-5 w-5 i-lucide-copy inline-block`}></span>
+            )}
+          </button>
+        </div>
+        <span className="inline-block font-bold text-sm uppercase mb-1">
+          API Key
+        </span>
+        <div className="flex items-center mb-4 w-[540px]">
+          <input
+            type="text"
+            name="key"
+            disabled
+            id="key"
+            value="FuGRzBUTVwEvui1BQ2BUpK3PT5LJjztZ"
+            className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 flex-1"
+          />
+          <button
+            aria-label="Re-generate API key"
+            className="bg-indigo-600 text-white rounded-lg py-4 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-indigo-500 duration-150 flex items-center ml-1"
+            onClick={() => {}}
+          >
+            <span
+              className={`h-5 w-5 i-lucide-refresh-ccw inline-block`}
+            ></span>
           </button>
         </div>
       </div>

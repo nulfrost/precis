@@ -11,6 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",
     "@remix-run/serve": "^2.9.1",
@@ -23,9 +24,9 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.1.185",
+    "@precis/database": "workspace:*",
     "@precis/eslint-config": "workspace:*",
     "@precis/typescript-config": "workspace:*",
-    "@precis/database": "workspace:*",
     "@remix-run/dev": "^2.9.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
