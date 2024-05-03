@@ -1,19 +1,32 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useRouteLoaderData } from "@remix-run/react";
 import { authenticator } from "@/web/services/auth.server";
-import { loader as rootLoader } from "@/web/root";
 import { useState } from "react";
+import { db, eq, schema } from "@precis/database";
+import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await authenticator.isAuthenticated(request, {
+  const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/",
   });
-  return null;
+
+  if (user.id) {
+    const guestbook = await db.query.guestbooks.findFirst({
+      where: eq(schema.guestbooks.user_id, user.id),
+      with: {
+        messages: true,
+      },
+    });
+
+    return { user, guestbook };
+  }
+
+  // you'll never get here though...
+  return { guestbook: null, user: null };
 }
 
 export default function Dashboard() {
-  const data = useRouteLoaderData<typeof rootLoader>("root");
   const [isCopiedToClipboard, setIsCopiedToClipboard] = useState(false);
+  const { user, guestbook } = useLoaderData<typeof loader>();
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -25,7 +38,7 @@ export default function Dashboard() {
       </div>
       <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6 mb-4">
         <h2 className="font-semibold text-lg">
-          {data?.user?.username}&apos;s guestbook
+          {user?.username}&apos;s guestbook
         </h2>
         <p className="text-gray-500 mb-4">
           Welcome to your guestbook! You will be able to manage messages as well
@@ -35,16 +48,16 @@ export default function Dashboard() {
           API Url
         </span>
         <div className="flex items-center mb-4">
-          <span className="text-gray-500 items-center bg-gray-100 p-3 inline-block rounded-s-md border border-gray-300 border-r-none">
-            https://precis.dev/api/v1/guestbook/
-          </span>
+          {/* <span className="text-gray-500 items-center bg-gray-100 p-3 inline-block rounded-s-md border border-gray-300 border-r-none">
+            {guestbook?.api_url}
+          </span> */}
           <input
             type="text"
             name="url"
             disabled
             id="url"
-            value={`${data?.user?.username}`}
-            className="border border-gray-300 rounded-e-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3"
+            value={`${guestbook?.api_url}`}
+            className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 w-[500px] text-gray-500"
           />
           <button
             aria-label="Copy guestbook api url to clipboard"
@@ -53,12 +66,12 @@ export default function Dashboard() {
             className="bg-indigo-600 text-white rounded-lg py-4 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-indigo-500 duration-150 flex items-center ml-1"
             onClick={() => {
               navigator.clipboard.writeText(
-                `https://precis.dev/api/v1/guestbook/${data?.user?.username}`,
+                `${guestbook?.api_url}${user?.username}`,
               );
               setIsCopiedToClipboard(true);
               setTimeout(() => {
                 setIsCopiedToClipboard(false);
-              }, 4000);
+              }, 2000);
             }}
           >
             {isCopiedToClipboard ? (
@@ -71,14 +84,14 @@ export default function Dashboard() {
         <span className="inline-block font-bold text-sm uppercase mb-1">
           API Key
         </span>
-        <div className="flex items-center mb-4 w-[540px]">
+        <div className="flex items-center mb-4">
           <input
             type="text"
             name="key"
             disabled
             id="key"
-            value="FuGRzBUTVwEvui1BQ2BUpK3PT5LJjztZ"
-            className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 flex-1"
+            value={`${guestbook?.api_key}`}
+            className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 w-[500px] text-gray-500"
           />
           <button
             aria-label="Re-generate API key"
