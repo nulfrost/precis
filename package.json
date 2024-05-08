@@ -35,5 +35,8 @@
   "engines": {
     "node": ">=18"
   },
-  "trustedDependencies": ["es5-ext"]
+  "trustedDependencies": ["es5-ext"],
+  "dependencies": {
+    "logixlysia": "^3.2.0"
+  }
 }
