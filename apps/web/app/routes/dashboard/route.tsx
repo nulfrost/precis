@@ -84,7 +84,7 @@ export default function Dashboard() {
         <fetcher.Form method="POST" action="">
           <button
             type="submit"
-            className="text-red-500 text-sm rounded-lg py-3 px-4 border-none outline-none ring-red-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-red-50 duration-150 flex items-center gap-2"
+            className="text-red-500 text-sm rounded-lg py-3 px-4 border-none outline-none ring-red-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-red-50 flex items-center gap-2"
           >
             <span>Regenerate API Key</span>
             <span className="i-lucide-refresh-ccw h-4 w-4 inline-block"></span>
