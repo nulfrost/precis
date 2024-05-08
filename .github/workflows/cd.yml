@@ -19,23 +19,14 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: 🔨 Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          cache-dependency-path: ./package.json
-          node-version: 16
+      - name: 🔨 Setup bun
+        uses: oven-sh/setup-bun@v1
 
       - name: 📥 Install deps
-        run: pnpm install
+        run: bun install
 
       - name: 🔬 Lint
-        run: pnpm lint
+        run: bun run lint
 
   typecheck:
     name: ⬣ Typecheck
@@ -44,23 +35,14 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: 🔨 Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          cache-dependency-path: ./package.json
-          node-version: 16
+      - name: 🔨 Setup bun
+        uses: oven-sh/setup-bun@v1
 
       - name: 📥 Install deps
-        run: pnpm install
+        run: bun install
 
       - name: 🔬 Lint
-        run: pnpm typecheck
+        run: bun run typecheck
 
   format:
     name: ⬣ Format
@@ -69,23 +51,14 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: 🔨 Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          cache-dependency-path: ./package.json
-          node-version: 18
+      - name: 🔨 Setup bun
+        uses: oven-sh/setup-bun@v1
 
       - name: 📥 Install deps
-        run: pnpm install
+        run: bun install
 
       - name: 🔬 Format
-        run: pnpm format
+        run: bun run format
 
   deploy:
     name: Deploy
@@ -95,20 +68,11 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
 
-      - name: 🔨 Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          cache-dependency-path: ./package.json
-          node-version: 18
+      - name: 🔨 Setup bun
+        uses: oven-sh/setup-bun@v1
 
       - name: 📥 Install deps
-        run: pnpm install
+        run: bun install
 
       - name: Deploy
         run: |
