@@ -1,8 +1,8 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { authenticator } from "@/web/services/auth.server";
-import { useState } from "react";
 import { db, eq, schema } from "@precis/database";
-import { useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { CopyToClipboardButton } from "@/web/routes/dashboard/copy-to-clipboard";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
@@ -25,8 +25,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Dashboard() {
-  const [isCopiedToClipboard, setIsCopiedToClipboard] = useState(false);
   const { user, guestbook } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -59,27 +59,10 @@ export default function Dashboard() {
             value={`${guestbook?.api_url}`}
             className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 w-[500px] text-gray-500"
           />
-          <button
-            aria-label="Copy guestbook api url to clipboard"
-            disabled={isCopiedToClipboard}
-            aria-disabled={isCopiedToClipboard}
-            className="bg-indigo-600 text-white rounded-lg py-4 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-indigo-500 duration-150 flex items-center ml-1"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                `${guestbook?.api_url}${user?.username}`,
-              );
-              setIsCopiedToClipboard(true);
-              setTimeout(() => {
-                setIsCopiedToClipboard(false);
-              }, 2000);
-            }}
-          >
-            {isCopiedToClipboard ? (
-              <span className={`h-5 w-5 i-lucide-check inline-block`}></span>
-            ) : (
-              <span className={`h-5 w-5 i-lucide-copy inline-block`}></span>
-            )}
-          </button>
+          <CopyToClipboardButton
+            copyText={`${guestbook?.api_url}`}
+            ariaLabel="Copy guestbook api url to clipboard"
+          />
         </div>
         <span className="inline-block font-bold text-sm uppercase mb-1">
           API Key
@@ -93,16 +76,20 @@ export default function Dashboard() {
             value={`${guestbook?.api_key}`}
             className="border border-gray-300 rounded-md ring-indigo-300 focus:ring-4 focus-visible:ring-4 outline-none p-3 w-[500px] text-gray-500"
           />
-          <button
-            aria-label="Re-generate API key"
-            className="bg-indigo-600 text-white rounded-lg py-4 px-4 shadow-sm border-none outline-none ring-indigo-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-indigo-500 duration-150 flex items-center ml-1"
-            onClick={() => {}}
-          >
-            <span
-              className={`h-5 w-5 i-lucide-refresh-ccw inline-block`}
-            ></span>
-          </button>
+          <CopyToClipboardButton
+            copyText={`${guestbook?.api_key}`}
+            ariaLabel="Copy guestbook api key to clipboard"
+          />
         </div>
+        <fetcher.Form method="POST" action="">
+          <button
+            type="submit"
+            className="text-red-500 text-sm rounded-lg py-3 px-4 border-none outline-none ring-red-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-red-50 duration-150 flex items-center gap-2"
+          >
+            <span>Regenerate API Key</span>
+            <span className="i-lucide-refresh-ccw h-4 w-4 inline-block"></span>
+          </button>
+        </fetcher.Form>
       </div>
       {/* <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
         <h2 className="font-semibold text-lg">Delete Guestbook</h2>

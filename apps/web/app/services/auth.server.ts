@@ -22,7 +22,7 @@ const gitHubStrategy = new GitHubStrategy(
       },
     });
 
-    // if user does not exist, create a new user
+    // if user does not exist, create a new user and guestbook
     if (!existingUser) {
       const user = await db.transaction(async (tx) => {
         const [user] = await tx
