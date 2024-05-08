@@ -3,9 +3,10 @@
   "private": true,
   "description": "Add a guestbook to your website with a simple API",
   "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "dev": "dotenv -- turbo dev",
-    "dev:web": "dotenv -- turbo dev --filter web",
+    "dev:web": "NODE_ENV=development dotenv -- turbo dev --filter web",
     "dev:api": "dotenv -- turbo dev --filter api",
     "build": "turbo build",
     "lint": "turbo lint",
@@ -31,8 +32,8 @@
     "turbo": "^1.13.3",
     "typescript": "^5.4.5"
   },
-  "packageManager": "pnpm@9.0.6",
   "engines": {
     "node": ">=18"
-  }
+  },
+  "trustedDependencies": ["es5-ext"]
 }

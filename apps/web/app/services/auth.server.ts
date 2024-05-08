@@ -2,6 +2,7 @@ import { Authenticator } from "remix-auth";
 import { sessionStorage } from "@/web/services/session.server";
 import { schema, db, eq, type User } from "@precis/database";
 import { GitHubStrategy } from "remix-auth-github";
+import { generateApiKey } from "../utils/generateApiKey.server";
 
 export const authenticator = new Authenticator<User>(sessionStorage);
 
@@ -21,17 +22,27 @@ const gitHubStrategy = new GitHubStrategy(
       },
     });
 
-    // if user does not exist, create a new user
+    // if user does not exist, create a new user and guestbook
     if (!existingUser) {
-      const newlyCreatedUser = await db
-        .insert(schema.users)
-        .values({ username: profile.displayName })
-        .returning({
-          id: schema.users.id,
-          username: schema.users.username,
+      const user = await db.transaction(async (tx) => {
+        const [user] = await tx
+          .insert(schema.users)
+          .values({ username: profile.displayName })
+          .returning({
+            id: schema.users.id,
+            username: schema.users.username,
+          });
+
+        await tx.insert(schema.guestbooks).values({
+          user_id: user.id,
+          api_url: `${process.env.API_URL}/api/v1/guestbooks/${profile.displayName}`,
+          api_key: generateApiKey(),
         });
 
-      return newlyCreatedUser[0];
+        return user;
+      });
+
+      return user;
     }
     return existingUser;
   },
