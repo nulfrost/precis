@@ -16,38 +16,48 @@ new Elysia({ name: "Precis API" })
   .group("/api/v1", (app) =>
     app
       .guard({
+        params: t.Object({
+          guestbookId: t.String(),
+        }),
+        headers: t.Object({
+          "X-Precis-Key": t.String(),
+        }),
         // @ts-ignore
-        async beforeHandle({ set, params: { username } }) {
-          const user = await db.query.users.findFirst({
-            where: eq(schema.users.username, username),
+        async beforeHandle({ set, params: { guestbookId }, headers }) {
+          // have to check if api key is valid and exists
+          if (!headers["X-Precis-Key"]) {
+            set.status = "Unauthorized";
+            return {
+              data: {
+                status: "401",
+                title: "Error: unauthorized",
+                detail:
+                  "Invalid API key provided. Please provide a valid API key to access this resource.",
+              },
+            };
+          }
+          // have to check if guestbook exists
+          const guestbook = await db.query.guestbooks.findFirst({
+            where: eq(schema.guestbooks.id, guestbookId),
           });
 
-          if (typeof user === "undefined") {
+          if (typeof guestbook === "undefined") {
             set.status = "Bad Request";
             return {
               data: {
                 status: "400",
-                title: "Error: could not find username",
-                detail: `The parameter username: "${username}" could not be found on the server. Please make sure the username is correct and try again.`,
+                title: "Error: could not find guestbook",
+                detail: `The guestbook with the id of: "${guestbook}" could not be found on the server. Please double check your API url.`,
               },
             };
           }
         },
       })
       .get(
-        "/guestbooks/:username/messages",
-        async ({ params: { username } }) => {
-          const user = await db.query.users.findFirst({
-            with: {
-              guestbook: {
-                columns: { id: true },
-              },
-            },
-            where: eq(schema.users.username, username),
-          });
-
+        "/guestbooks/:guestbookId/messages",
+        async ({ params: { guestbookId } }) => {
           const guestbook = await db.query.guestbooks.findFirst({
-            where: eq(schema.guestbooks.id, user!.guestbook.id),
+            where: eq(schema.guestbooks.id, guestbookId),
             with: {
               messages: {
                 columns: {
@@ -66,16 +76,12 @@ new Elysia({ name: "Precis API" })
         },
       )
       .post(
-        "/guestbooks/:username/messages",
-        async ({ params: { username }, body, set }) => {
-          const user = await db.query.users.findFirst({
-            with: { guestbook: true },
-            where: eq(schema.users.username, username),
-          });
+        "/guestbooks/:guestbookId/messages",
+        async ({ params: { guestbookId }, body, set }) => {
           await db.insert(schema.messages).values({
             username: body.username,
             message: body.message,
-            guestbook_id: user?.guestbook?.id,
+            guestbook_id: guestbookId,
           });
 
           set.status = 201;
