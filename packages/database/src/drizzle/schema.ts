@@ -27,7 +27,7 @@ export const guestbooks = sqliteTable("guestbooks", {
   updated_at: text("created_at")
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`),
-  user_id: text("user_id").references(() => users.id),
+  user_id: text("user_id").references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const messages = sqliteTable("messages", {
@@ -46,16 +46,23 @@ export const messages = sqliteTable("messages", {
 });
 
 export const usersRelations = relations(users, ({ one }) => ({
-  guestbook: one(guestbooks),
+  guestbook: one(guestbooks, {
+    fields: [users.id],
+    references: [guestbooks.user_id],
+    relationName: "user_guestbook",
+  }),
 }));
 
 export const guestbooksRelations = relations(guestbooks, ({ many }) => ({
-  messages: many(messages),
+  messages: many(messages, {
+    relationName: "guestbook_messages",
+  }),
 }));
 
 export const messagesRelations = relations(messages, ({ one }) => ({
   guestbook: one(guestbooks, {
     fields: [messages.guestbook_id],
     references: [guestbooks.id],
+    relationName: "guestbook_messages",
   }),
 }));
