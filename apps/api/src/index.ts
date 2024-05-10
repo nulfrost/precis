@@ -12,6 +12,7 @@ import { helmet } from "elysia-helmet";
 import { createPinoLogger, formatters } from "@bogeychan/elysia-logger";
 import { ip } from "elysia-ip";
 import { readRateLimit, writeRateLimit } from "../utils/rate-limit";
+import { pluginGracefulServer } from "graceful-server-elysia";
 
 const log = createPinoLogger({
   level: process.env.LOG_LEVEL || "info",
@@ -38,6 +39,14 @@ new Elysia({ name: "Precis API" })
   .use(ip())
   .use(HttpStatusCode())
   .use(log.into({ autoLogging: false }))
+  .use(
+    pluginGracefulServer({
+      readinessEndpoint: "/healthcheck",
+      onStart: () => {
+        log.info("[PRECIS API]: Server started successfully");
+      },
+    }),
+  )
   .error({
     AUTHENTICATION_ERROR: AuthenticationError,
     BAD_REQUEST_ERROR: BadRequestError,
