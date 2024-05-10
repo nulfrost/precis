@@ -1,5 +1,5 @@
 import { Elysia, NotFoundError, t } from "elysia";
-import { db, eq, schema } from "@precis/database";
+import { and, db, eq, schema } from "@precis/database";
 import {
   AuthenticationError,
   BadRequestError,
@@ -136,7 +136,10 @@ new Elysia({ name: "Precis API" })
           }
           // have to check if guestbook exists
           const guestbook = await db.query.guestbooks.findFirst({
-            where: eq(schema.guestbooks.id, guestbookId),
+            where: and(
+              eq(schema.guestbooks.id, guestbookId),
+              eq(schema.guestbooks.api_key, headers["x-precis-key"]),
+            ),
           });
 
           if (typeof guestbook === "undefined") {
