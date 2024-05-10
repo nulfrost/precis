@@ -3,14 +3,15 @@ import { and, db, eq, schema } from "@precis/database";
 import {
   AuthenticationError,
   BadRequestError,
-  sendErrorResponse,
-  sendSuccessResponse,
-} from "../utils";
+  RateLimitExceededError,
+} from "../utils/errors";
+import { sendErrorResponse, sendSuccessResponse } from "../utils/responses";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { HttpStatusEnum } from "elysia-http-status-code/status";
 import { helmet } from "elysia-helmet";
 import { createPinoLogger, formatters } from "@bogeychan/elysia-logger";
 import { ip } from "elysia-ip";
+import { readRateLimit, writeRateLimit } from "../utils/rate-limit";
 
 const log = createPinoLogger({
   level: process.env.LOG_LEVEL || "info",
@@ -40,6 +41,7 @@ new Elysia({ name: "Precis API" })
   .error({
     AUTHENTICATION_ERROR: AuthenticationError,
     BAD_REQUEST_ERROR: BadRequestError,
+    RATE_LIMIT_EXCEEDED: RateLimitExceededError,
   })
   .onError(({ code, error, httpStatus, set, ip, params: { guestbookId } }) => {
     switch (code) {
@@ -77,6 +79,13 @@ new Elysia({ name: "Precis API" })
         return sendErrorResponse({
           status: httpStatus.HTTP_400_BAD_REQUEST,
           title: "Error: could not find guestbook",
+          detail: error.message.toString(),
+        });
+      case "RATE_LIMIT_EXCEEDED":
+        set.status = 429;
+        return sendErrorResponse({
+          status: httpStatus.HTTP_429_TOO_MANY_REQUESTS,
+          title: "Error: rate limit exceeded",
           detail: error.message.toString(),
         });
       case "NOT_FOUND":
@@ -128,13 +137,13 @@ new Elysia({ name: "Precis API" })
           "x-precis-key": t.String(),
         }),
         async beforeHandle({ params: { guestbookId }, headers }) {
-          // have to check if api key is valid and exists
+          // check if api key is being sent in header
           if (!headers["x-precis-key"]) {
             throw new AuthenticationError(
               "Invalid API key provided. Please provide a valid API key to access this resource.",
             );
           }
-          // have to check if guestbook exists
+          // check if guestbook and api key exists
           const guestbook = await db.query.guestbooks.findFirst({
             where: and(
               eq(schema.guestbooks.id, guestbookId),
@@ -144,14 +153,25 @@ new Elysia({ name: "Precis API" })
 
           if (typeof guestbook === "undefined") {
             throw new BadRequestError(
-              "The guestbook requested does not exist on the server. Please make sure your guestbook id is valid.",
+              "The guestbook requested does not exist or the api key is invalid. Please make sure your credentials are correct.",
             );
           }
         },
       })
       .get(
         "/guestbooks/:guestbookId/messages",
-        async ({ params: { guestbookId } }) => {
+        async ({ params: { guestbookId }, ip, set }) => {
+          const { success, limit, remaining, reset } =
+            await readRateLimit.limit(ip);
+          if (!success) {
+            set.headers["x-rate-limit-limit"] = limit.toString();
+            set.headers["x-rate-limit-remaining"] = remaining.toString();
+            set.headers["x-rate-limit-reset"] = reset.toString();
+            throw new RateLimitExceededError(
+              "Rate limit exceeded. Please try again later.",
+            );
+          }
+
           const guestbook = await db.query.guestbooks.findFirst({
             where: eq(schema.guestbooks.id, guestbookId),
             with: {
@@ -173,7 +193,17 @@ new Elysia({ name: "Precis API" })
       )
       .post(
         "/guestbooks/:guestbookId/messages",
-        async ({ params: { guestbookId }, body, set }) => {
+        async ({ params: { guestbookId }, body, set, ip }) => {
+          const { success, limit, remaining, reset } =
+            await writeRateLimit.limit(ip);
+          if (!success) {
+            set.headers["x-rate-limit-limit"] = limit.toString();
+            set.headers["x-rate-limit-remaining"] = remaining.toString();
+            set.headers["x-rate-limit-reset"] = reset.toString();
+            throw new RateLimitExceededError(
+              "Rate limit exceeded. Please try again later.",
+            );
+          }
           await db.insert(schema.messages).values({
             username: body.username,
             message: body.message,
