@@ -2,7 +2,7 @@
   "name": "@precis/eslint-config",
   "version": "0.0.0",
   "private": true,
-  "files": ["remix.js"],
+  "files": ["remix.js", "elysia.js"],
   "devDependencies": {
     "eslint-config-turbo": "^1.12.4",
     "eslint-config-prettier": "^9.1.0",

@@ -24,7 +24,7 @@ const log = createPinoLogger({
         time: new Date().toISOString(),
       };
     },
-    level(label, _) {
+    level(label) {
       return { level: label.toUpperCase() };
     },
     log(object) {
