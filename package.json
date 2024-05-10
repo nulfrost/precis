@@ -37,6 +37,11 @@
   },
   "trustedDependencies": ["es5-ext"],
   "dependencies": {
-    "logixlysia": "^3.2.0"
+    "@bogeychan/elysia-logger": "^0.0.21",
+    "elysia-helmet": "^1.0.2",
+    "elysia-http-status-code": "^1.0.9",
+    "elysia-ip": "^1.0.5",
+    "graceful-server-elysia": "^1.0.9",
+    "pino-pretty": "^11.0.0"
   }
 }
