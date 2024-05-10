@@ -33,10 +33,19 @@ const gitHubStrategy = new GitHubStrategy(
             username: schema.users.username,
           });
 
-        await tx.insert(schema.guestbooks).values({
-          user_id: user.id,
-          api_url: `${process.env.API_URL}/api/v1/guestbooks/${profile.displayName}`,
-          api_key: generateApiKey(),
+        const [guestbook] = await tx
+          .insert(schema.guestbooks)
+          .values({
+            user_id: user.id,
+            api_url: "",
+            api_key: generateApiKey(),
+          })
+          .returning({
+            id: schema.guestbooks.id,
+          });
+
+        await tx.update(schema.guestbooks).set({
+          api_url: `${process.env.API_URL}/api/v1/guestbooks/${guestbook.id}/messages`,
         });
 
         return user;
