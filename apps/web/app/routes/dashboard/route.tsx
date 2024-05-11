@@ -1,9 +1,16 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { authenticator } from "@/web/services/auth.server";
 import { db, eq, schema } from "@precis/database";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { CopyToClipboardButton } from "@/web/routes/dashboard/copy-to-clipboard";
+import { CodeBlock } from "@/web/components/CodeBlock";
+import * as Tabs from "@radix-ui/react-tabs";
 
+export const meta: MetaFunction = () => [
+  {
+    title: "Precis | Dashboard",
+  },
+];
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/",
@@ -24,6 +31,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { guestbook: null, user: null };
 }
 
+const TRIGGER_STYLES =
+  "text-gray-500 text-sm uppercase aria-selected:underline font-bold hover:(underline text-indigo-500) underline-offset-8 decoration-2 decoration-indigo-500";
+
 export default function Dashboard() {
   const { user, guestbook } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
@@ -41,8 +51,8 @@ export default function Dashboard() {
           {user?.username}&apos;s guestbook
         </h2>
         <p className="text-gray-500 mb-4">
-          Welcome to your guestbook! You will be able to manage messages as well
-          as your guestbook settings on this page.
+          Welcome to your guestbook! You will be able to manage messages, view
+          documentation and modify your guestbook settings.
         </p>
         <span className="inline-block font-bold text-sm uppercase mb-1">
           API Url
@@ -91,20 +101,108 @@ export default function Dashboard() {
           </button>
         </fetcher.Form>
       </div>
-      {/* <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
-        <h2 className="font-semibold text-lg">Delete Guestbook</h2>
+      <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
+        <h2 className="font-semibold text-lg">Documentation</h2>
         <p className="text-gray-500 mb-4">
-          Deleting your guestbook will permanently remove all of your messages,
-          be sure to export them first if you want to keep them.
+          Examples of how to use the API to interact with your guestbook.
         </p>
-        <button
-          className="bg-red-500 text-white rounded-md py-2 px-4 shadow-sm border-none outline-none focus-visible:(focus:(ring-4 ring-red-300)) ring-offset-2 text-sm hover:bg-red-600 duration-150 flex items-center gap-2"
-          onClick={() => alert("should open a modal")}
-        >
-          <span>Delete guestbook</span>
-          <span className="h-4 w-4 i-lucide-trash inline-block"></span>
-        </button>
-      </div> */}
+        <Tabs.Root defaultValue="1">
+          <Tabs.List className="pb-4 space-x-4">
+            <Tabs.Trigger value="1" className={TRIGGER_STYLES}>
+              Node.js
+            </Tabs.Trigger>
+            <Tabs.Trigger value="2" className={TRIGGER_STYLES}>
+              Golang
+            </Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="1">
+            <div className="space-y-4">
+              <CodeBlock
+                code={`// Fetch all messages from your guestbook
+const response = await fetch("${guestbook?.api_url}")
+const data = await response.json()
+console.log({ data })`}
+              />
+              <CodeBlock
+                code={`// Add a new message to your guestbook
+await fetch("${guestbook?.api_url}", {
+ method: "POST",
+ headers: {
+   "x-precis-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
+ },
+ body: JSON.stringify({
+      name: "John Doe",
+      message: "Hello, world!"
+  })
+})`}
+              />
+            </div>
+          </Tabs.Content>
+          <Tabs.Content value="2">
+            <div className="space-y-4">
+              <CodeBlock
+                code={`// Fetch all messages from your guestbook
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"io"
+)
+
+func main() {
+	resp, err := http.Get("${guestbook?.api_url}")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%s", body)
+}`}
+              />
+              <CodeBlock
+                code={`// Add a new message to your guestbook
+package main
+
+import (
+	"log"
+	"net/http"
+	"bytes"
+)
+
+func main() {
+    jsonBody := []byte(\`{"name": "John Doe", "message": "Hello, World!"}\`)
+	bodyReader := bytes.NewReader(jsonBody)
+
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:4000/api/v1/guestbooks/ul04oyvi3mz8axxoh0d0axac/messages", bodyReader)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Set("x-precis-key", "${guestbook?.api_key}") // API key should be stored in an environment variable, avoid hardcoding it
+
+	client := http.Client{}
+
+	client.Do(req)
+
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+`}
+              />
+            </div>
+          </Tabs.Content>
+        </Tabs.Root>
+      </div>
     </div>
   );
 }
