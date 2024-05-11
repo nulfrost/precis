@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
 
 export function generateApiKey() {
-  return crypto.randomBytes(12).toString("hex");
+  const hexString = crypto.randomBytes(12).toString("hex");
+  const dashedHexString = hexString.match(/.{1,4}/g)?.join("-");
+  return dashedHexString;
 }

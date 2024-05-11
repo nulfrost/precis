@@ -22,7 +22,9 @@
     "react-dom": "18.3.0-canary-0210f0b08-20230525",
     "react-syntax-highlighter": "^15.5.0",
     "remix-auth": "^3.6.0",
-    "remix-auth-github": "^1.7.0"
+    "remix-auth-github": "^1.7.0",
+    "remix-toast": "^1.2.0",
+    "sonner": "^1.4.41"
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.1.185",

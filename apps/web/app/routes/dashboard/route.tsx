@@ -1,10 +1,13 @@
-import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
 import { authenticator } from "@/web/services/auth.server";
 import { db, eq, schema } from "@precis/database";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { CopyToClipboardButton } from "@/web/routes/dashboard/copy-to-clipboard";
 import { CodeBlock } from "@/web/components/CodeBlock";
 import * as Tabs from "@radix-ui/react-tabs";
+import { getToast } from "remix-toast";
+import { useEffect } from "react";
+import { Toaster, toast as notify } from "sonner";
 
 export const meta: MetaFunction = () => [
   {
@@ -16,27 +19,37 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: "/",
   });
 
-  if (user.id) {
-    const guestbook = await db.query.guestbooks.findFirst({
-      where: eq(schema.guestbooks.user_id, user.id),
+  const [guestbook, { toast, headers }] = await Promise.all([
+    db.query.guestbooks.findFirst({
+      where: eq(schema.guestbooks.user_id, user.id!),
       with: {
         messages: true,
       },
-    });
+    }),
+    getToast(request),
+  ]);
 
-    return { user, guestbook };
-  }
-
-  // you'll never get here though...
-  return { guestbook: null, user: null };
+  return json({ user, guestbook, toast }, { headers });
 }
 
 const TRIGGER_STYLES =
-  "text-gray-500 text-sm uppercase aria-selected:underline font-bold hover:(underline text-indigo-500) underline-offset-8 decoration-2 decoration-indigo-500";
+  "text-gray-500 text-sm uppercase aria-selected:(underline text-indigo-500) font-bold hover:(underline text-indigo-500) underline-offset-8 decoration-2 decoration-indigo-500";
 
 export default function Dashboard() {
-  const { user, guestbook } = useLoaderData<typeof loader>();
+  const { user, guestbook, toast } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+
+  useEffect(() => {
+    if (toast?.type === "error") {
+      notify.error(
+        <div className="flex flex-col">
+          <p>{toast.message}</p>
+          <small>{toast.description}</small>
+        </div>,
+      );
+    }
+  }, [toast]);
+
   return (
     <div className="mt-5 px-5 xl:px-0">
       <div className="flex items-baseline">
@@ -58,9 +71,6 @@ export default function Dashboard() {
           API Url
         </span>
         <div className="flex items-center mb-4">
-          {/* <span className="text-gray-500 items-center bg-gray-100 p-3 inline-block rounded-s-md border border-gray-300 border-r-none">
-            {guestbook?.api_url}
-          </span> */}
           <input
             type="text"
             name="url"
@@ -91,17 +101,17 @@ export default function Dashboard() {
             ariaLabel="Copy guestbook api key to clipboard"
           />
         </div>
-        <fetcher.Form method="POST" action="">
+        <fetcher.Form method="POST" action="/regenerate">
           <button
             type="submit"
-            className="text-red-500 text-sm rounded-lg py-3 px-4 border-none outline-none ring-red-400 focus:(ring-4 ring-offset-2) focus-visble:(ring-4 ring-offset-2) hover:bg-red-50 flex items-center gap-2"
+            className="text-red-500 text-sm rounded-lg py-3 px-4 border-none outline-none ring-red-400 focus:(ring-4 ring-offset-2 bg-red-50) focus-visble:(ring-4 ring-offset-2) hover:bg-red-50 flex items-center gap-2"
           >
             <span>Regenerate API Key</span>
             <span className="i-lucide-refresh-ccw h-4 w-4 inline-block"></span>
           </button>
         </fetcher.Form>
       </div>
-      <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6">
+      <div className="bg-white shadow-sm rounded-md border border-gray-200 px-10 py-6 mb-4">
         <h2 className="font-semibold text-lg">Documentation</h2>
         <p className="text-gray-500 mb-4">
           Examples of how to use the API to interact with your guestbook.
@@ -214,6 +224,7 @@ func main() {
           </Tabs.Content>
         </Tabs.Root>
       </div>
+      <Toaster position="top-center" richColors className="bg-red-50" />
     </div>
   );
 }

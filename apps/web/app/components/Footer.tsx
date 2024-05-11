@@ -5,8 +5,11 @@ export function Footer() {
         <ul className="flex justify-end">
           <li>
             <a
+              aria-label="Github repository for precis, opens in a new tab"
               href="https://github.com/nulfrost/precis"
               className="text-sm font-bold hover:(underline text-blue-500) text-gray-500"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               Github
             </a>
