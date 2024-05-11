@@ -119,7 +119,10 @@ export default function Dashboard() {
             <div className="space-y-4">
               <CodeBlock
                 code={`// Fetch all messages from your guestbook
-const response = await fetch("${guestbook?.api_url}")
+const response = await fetch("${guestbook?.api_url}", {
+  headers: {
+    "x-precis-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
+})
 const data = await response.json()
 console.log({ data })`}
               />
@@ -152,17 +155,25 @@ import (
 )
 
 func main() {
-	resp, err := http.Get("${guestbook?.api_url}")
+	req, err := http.NewRequest(http.MethodGet, "${guestbook?.api_url}", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	req.header.Set("x-precis-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
+
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+      log.Fatal(err)
+    }
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	fmt.Printf("%s", body)
 }`}
@@ -186,7 +197,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	req.Header.Set("x-precis-key", "${guestbook?.api_key}") // API key should be stored in an environment variable, avoid hardcoding it
+	req.Header.Set("x-precis-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
 
 	client := http.Client{}
 
