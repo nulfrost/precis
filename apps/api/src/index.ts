@@ -175,6 +175,16 @@ new Elysia({ name: "Precis API" })
           set,
           query: { amount, created_at, page },
         }) => {
+          if (
+            !["25", "50", "75", "100"].includes(amount) ||
+            !["asc", "desc"].includes(created_at) ||
+            isNaN(+page)
+          ) {
+            throw new BadRequestError(
+              "One or more query parameters are invalid. Please check the documentation for available query parameters.",
+            );
+          }
+
           const { success, limit, remaining, reset } =
             await readRateLimit.limit(ip);
           if (!success) {
