@@ -6,7 +6,12 @@
       "dependsOn": ["^build"],
       "outputs": ["./build/"]
     },
-    "start": {
+    "start:web": {
+      "dependsOn": ["^build", "^db:push"],
+      "cache": false,
+      "persistent": true
+    },
+    "start:api": {
       "dependsOn": ["^build", "^db:push"],
       "cache": false,
       "persistent": true
