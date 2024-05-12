@@ -6,6 +6,11 @@
       "dependsOn": ["^build"],
       "outputs": ["./build/"]
     },
+    "start": {
+      "dependsOn": ["^build", "^db:push"],
+      "cache": false,
+      "persistent": true
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },
