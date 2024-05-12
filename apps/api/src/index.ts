@@ -136,18 +136,18 @@ new Elysia({ name: "Precis API" })
         });
     }
   })
-  .group("/api/v1", (app) =>
+  .group("/v1", (app) =>
     app
       .guard({
         params: t.Object({
           guestbookId: t.String(),
         }),
         headers: t.Object({
-          "x-precis-key": t.String(),
+          "x-precis-api-key": t.String(),
         }),
         async beforeHandle({ params: { guestbookId }, headers }) {
           // check if api key is being sent in header
-          if (!headers["x-precis-key"]) {
+          if (!headers["x-precis-api-key"]) {
             throw new AuthenticationError(
               "Invalid API key provided. Please provide a valid API key to access this resource.",
             );
@@ -156,7 +156,7 @@ new Elysia({ name: "Precis API" })
           const guestbook = await db.query.guestbooks.findFirst({
             where: and(
               eq(schema.guestbooks.id, guestbookId),
-              eq(schema.guestbooks.api_key, headers["x-precis-key"]),
+              eq(schema.guestbooks.api_key, headers["x-precis-api-key"]),
             ),
           });
 

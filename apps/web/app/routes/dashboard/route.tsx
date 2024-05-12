@@ -131,7 +131,7 @@ export default function Dashboard() {
                 code={`// Fetch all messages from your guestbook
 const response = await fetch("${guestbook?.api_url}", {
   headers: {
-    "x-precis-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
+    "x-precis-api-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
 })
 const data = await response.json()
 console.log({ data })`}
@@ -141,7 +141,7 @@ console.log({ data })`}
 await fetch("${guestbook?.api_url}", {
  method: "POST",
  headers: {
-   "x-precis-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
+   "x-precis-api-key": "${guestbook?.api_key}" // This should be an environment variable and only be used on the server, do not expose this api key
  },
  body: JSON.stringify({
       name: "John Doe",
@@ -170,7 +170,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	req.header.Set("x-precis-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
+	req.header.Set("x-precis-api-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
 
 
 	client := &http.Client{}
@@ -207,7 +207,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	req.Header.Set("x-precis-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
+	req.Header.Set("x-precis-api-key", "${guestbook?.api_key}") // This should be an environment variable and only be used on the server, do not expose this api key
 
 	client := http.Client{}
 
