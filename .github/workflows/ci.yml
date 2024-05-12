@@ -61,23 +61,3 @@ jobs:
 
       - name: 🔬 Format
         run: bun run format
-
-  deploy:
-    name: Deploy
-    needs: [lint, typecheck, format]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
-
-      - name: 🔨 Setup bun
-        uses: oven-sh/setup-bun@v1
-
-      - name: 📥 Install deps
-        run: bun install
-
-      - name: Deploy
-        run: |
-          echo "Deploying..."
-          echo "Deployed!"

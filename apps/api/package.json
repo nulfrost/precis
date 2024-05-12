@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir ./build",
+    "build:api": "bun build src/index.ts --outdir ./build",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint --max-warnings=0 .",
-    "start": "NODE_ENV=production bun build/index.js",
+    "start:api": "NODE_ENV=production bun build/index.js",
     "test": "bun test"
   },
   "devDependencies": {

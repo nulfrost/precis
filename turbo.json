@@ -2,17 +2,21 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDotEnv": [".env"],
   "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
+    "build:web": {
+      "dependsOn": ["^build:web"],
+      "outputs": ["./build/"]
+    },
+    "build:api": {
+      "dependsOn": ["^build:api"],
       "outputs": ["./build/"]
     },
     "start:web": {
-      "dependsOn": ["^build", "^db:push"],
+      "dependsOn": ["^build:web", "^db:push"],
       "cache": false,
       "persistent": true
     },
     "start:api": {
-      "dependsOn": ["^build", "^db:push"],
+      "dependsOn": ["^build:api", "^db:push"],
       "cache": false,
       "persistent": true
     },
