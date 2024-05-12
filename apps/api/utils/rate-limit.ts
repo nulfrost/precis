@@ -23,6 +23,6 @@ export const readRateLimit = new Ratelimit({
 
 export const writeRateLimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(30, "10 s"),
+  limiter: Ratelimit.slidingWindow(5, "30 m"),
   analytics: true,
 });

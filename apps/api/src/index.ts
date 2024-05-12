@@ -1,5 +1,5 @@
 import { Elysia, NotFoundError, t } from "elysia";
-import { and, db, eq, schema } from "@precis/database";
+import { and, asc, db, desc, eq, schema } from "@precis/database";
 import {
   AuthenticationError,
   BadRequestError,
@@ -169,7 +169,12 @@ new Elysia({ name: "Precis API" })
       })
       .get(
         "/guestbooks/:guestbookId/messages",
-        async ({ params: { guestbookId }, ip, set }) => {
+        async ({
+          params: { guestbookId },
+          ip,
+          set,
+          query: { amount, created_at, page },
+        }) => {
           const { success, limit, remaining, reset } =
             await readRateLimit.limit(ip);
           if (!success) {
@@ -183,8 +188,15 @@ new Elysia({ name: "Precis API" })
 
           const guestbook = await db.query.guestbooks.findFirst({
             where: eq(schema.guestbooks.id, guestbookId),
+            offset: page ? (+page - 1) * (+amount ?? 25) : 0,
             with: {
               messages: {
+                limit: +amount ?? 25,
+                orderBy: [
+                  created_at === "asc"
+                    ? asc(schema.messages.created_at)
+                    : desc(schema.messages.created_at),
+                ],
                 columns: {
                   id: true,
                   username: true,
@@ -195,9 +207,27 @@ new Elysia({ name: "Precis API" })
               },
             },
           });
+
+          if (typeof guestbook !== "undefined") {
+            return {
+              data: guestbook?.messages,
+            };
+          }
           return {
-            data: guestbook?.messages,
+            data: [],
           };
+        },
+        {
+          query: t.Object({
+            amount: t.Union([
+              t.Literal("25"),
+              t.Literal("50"),
+              t.Literal("75"),
+              t.Literal("100"),
+            ]),
+            created_at: t.Union([t.Literal("asc"), t.Literal("desc")]),
+            page: t.String(),
+          }),
         },
       )
       .post(
