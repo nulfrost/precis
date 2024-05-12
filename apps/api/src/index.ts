@@ -1,5 +1,5 @@
 import { Elysia, NotFoundError, t } from "elysia";
-import { and, db, eq, schema } from "@precis/database";
+import { and, asc, db, desc, eq, schema } from "@precis/database";
 import {
   AuthenticationError,
   BadRequestError,
@@ -50,7 +50,7 @@ new Elysia({ name: "Precis API" })
   .error({
     AUTHENTICATION_ERROR: AuthenticationError,
     BAD_REQUEST_ERROR: BadRequestError,
-    RATE_LIMIT_EXCEEDED: RateLimitExceededError,
+    RATE_LIMIT_EXCEEDED_ERROR: RateLimitExceededError,
   })
   .onError(({ code, error, httpStatus, set, ip, params: { guestbookId } }) => {
     switch (code) {
@@ -87,10 +87,10 @@ new Elysia({ name: "Precis API" })
         );
         return sendErrorResponse({
           status: httpStatus.HTTP_400_BAD_REQUEST,
-          title: "Error: could not find guestbook",
+          title: "Error: bad request",
           detail: error.message.toString(),
         });
-      case "RATE_LIMIT_EXCEEDED":
+      case "RATE_LIMIT_EXCEEDED_ERROR":
         set.status = 429;
         return sendErrorResponse({
           status: httpStatus.HTTP_429_TOO_MANY_REQUESTS,
@@ -169,7 +169,12 @@ new Elysia({ name: "Precis API" })
       })
       .get(
         "/guestbooks/:guestbookId/messages",
-        async ({ params: { guestbookId }, ip, set }) => {
+        async ({
+          params: { guestbookId },
+          ip,
+          set,
+          query: { amount, created_at, page },
+        }) => {
           const { success, limit, remaining, reset } =
             await readRateLimit.limit(ip);
           if (!success) {
@@ -181,10 +186,37 @@ new Elysia({ name: "Precis API" })
             );
           }
 
+          const fetchAmount = amount ? +amount : 25;
+
+          if (
+            isNaN(fetchAmount) ||
+            !["25", "50", "75", "100"].includes(fetchAmount.toString())
+          )
+            throw new BadRequestError(
+              "Invalid amount provided. Please provide one of the following: 25, 50, 75, 100.",
+            );
+
+          if (created_at && !["asc", "desc"].includes(created_at)) {
+            throw new BadRequestError(
+              "Invalid sort order provided. Please provide either 'asc' or 'desc'.",
+            );
+          }
+
+          if (page && isNaN(+page)) {
+            throw new BadRequestError("Page must be a number.");
+          }
+
           const guestbook = await db.query.guestbooks.findFirst({
             where: eq(schema.guestbooks.id, guestbookId),
+            offset: page ? (+page - 1) * (fetchAmount ?? 25) : 0,
             with: {
               messages: {
+                limit: fetchAmount ?? 25,
+                orderBy: [
+                  created_at === "asc"
+                    ? asc(schema.messages.created_at)
+                    : desc(schema.messages.created_at),
+                ],
                 columns: {
                   id: true,
                   username: true,
@@ -195,9 +227,22 @@ new Elysia({ name: "Precis API" })
               },
             },
           });
+
+          if (typeof guestbook !== "undefined") {
+            return {
+              data: guestbook?.messages,
+            };
+          }
           return {
-            data: guestbook?.messages,
+            data: [],
           };
+        },
+        {
+          query: t.Object({
+            amount: t.Optional(t.String()),
+            created_at: t.Optional(t.String()),
+            page: t.Optional(t.String()),
+          }),
         },
       )
       .post(
