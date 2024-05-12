@@ -4,11 +4,13 @@
   "pipeline": {
     "build:web": {
       "dependsOn": ["^build:web"],
-      "outputs": ["./build/"]
+      "outputs": ["./build/"],
+      "cache": false
     },
     "build:api": {
       "dependsOn": ["^build:api"],
-      "outputs": ["./build/"]
+      "outputs": ["./build/"],
+      "cache": false
     },
     "start:web": {
       "dependsOn": ["^build:web", "^db:push"],
