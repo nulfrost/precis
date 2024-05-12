@@ -52,90 +52,101 @@ new Elysia({ name: "Precis API" })
     BAD_REQUEST_ERROR: BadRequestError,
     RATE_LIMIT_EXCEEDED_ERROR: RateLimitExceededError,
   })
-  .onError(({ code, error, httpStatus, set, ip, params: { guestbookId } }) => {
-    switch (code) {
-      case "AUTHENTICATION_ERROR":
-        set.status = 401;
-        log.error(
-          {
+  .onError(
+    ({
+      code,
+      error,
+      httpStatus,
+      set,
+      ip,
+      params: { guestbookId },
+      request,
+    }) => {
+      switch (code) {
+        case "AUTHENTICATION_ERROR":
+          set.status = 401;
+          log.error(
+            {
+              status: httpStatus.HTTP_401_UNAUTHORIZED,
+              ip,
+              err: {
+                stack: error.stack,
+              },
+              guestbookId,
+            },
+            error.message.toString(),
+          );
+          return sendErrorResponse({
             status: httpStatus.HTTP_401_UNAUTHORIZED,
-            ip,
-            err: {
-              stack: error.stack,
+            title: "Error: unauthorized",
+            detail: error.message.toString(),
+          });
+        case "BAD_REQUEST_ERROR":
+          set.status = 400;
+          log.error(
+            {
+              status: httpStatus.HTTP_400_BAD_REQUEST,
+              ip,
+              err: {
+                stack: error.stack,
+              },
+              guestbookId,
             },
-            guestbookId,
-          },
-          error.message.toString(),
-        );
-        return sendErrorResponse({
-          status: httpStatus.HTTP_401_UNAUTHORIZED,
-          title: "Error: unauthorized",
-          detail: error.message.toString(),
-        });
-      case "BAD_REQUEST_ERROR":
-        set.status = 400;
-        log.error(
-          {
+            error.message.toString(),
+          );
+          return sendErrorResponse({
             status: httpStatus.HTTP_400_BAD_REQUEST,
-            ip,
-            err: {
-              stack: error.stack,
+            title: "Error: bad request",
+            detail: error.message.toString(),
+          });
+        case "RATE_LIMIT_EXCEEDED_ERROR":
+          set.status = 429;
+          return sendErrorResponse({
+            status: httpStatus.HTTP_429_TOO_MANY_REQUESTS,
+            title: "Error: rate limit exceeded",
+            detail: error.message.toString(),
+          });
+        case "NOT_FOUND":
+          log.error(
+            {
+              status: httpStatus.HTTP_404_NOT_FOUND,
+              ip,
+              err: {
+                stack: error.stack,
+              },
+              guestbookId,
+              path: request.url,
             },
-            guestbookId,
-          },
-          error.message.toString(),
-        );
-        return sendErrorResponse({
-          status: httpStatus.HTTP_400_BAD_REQUEST,
-          title: "Error: bad request",
-          detail: error.message.toString(),
-        });
-      case "RATE_LIMIT_EXCEEDED_ERROR":
-        set.status = 429;
-        return sendErrorResponse({
-          status: httpStatus.HTTP_429_TOO_MANY_REQUESTS,
-          title: "Error: rate limit exceeded",
-          detail: error.message.toString(),
-        });
-      case "NOT_FOUND":
-        log.error(
-          {
+            error.message.toString(),
+          );
+          return sendErrorResponse({
             status: httpStatus.HTTP_404_NOT_FOUND,
-            ip,
-            err: {
-              stack: error.stack,
+            title: "Error: resource not found",
+            detail:
+              "Resource requested could not be found on the server. Please make sure your request is valid.",
+          });
+        case "INTERNAL_SERVER_ERROR":
+          set.status = 500;
+          log.error(
+            {
+              status: httpStatus.HTTP_500_INTERNAL_SERVER_ERROR,
+              ip,
+              err: {
+                stack: error.stack,
+              },
+              guestbookId,
             },
-            guestbookId,
-          },
-          error.message.toString(),
-        );
-        return sendErrorResponse({
-          status: httpStatus.HTTP_404_NOT_FOUND,
-          title: "Error: resource not found",
-          detail:
-            "Resource requested could not be found on the server. Please make sure your request is valid.",
-        });
-      case "INTERNAL_SERVER_ERROR":
-        set.status = 500;
-        log.error(
-          {
+            error.message.toString(),
+          );
+          return sendErrorResponse({
             status: httpStatus.HTTP_500_INTERNAL_SERVER_ERROR,
-            ip,
-            err: {
-              stack: error.stack,
-            },
-            guestbookId,
-          },
-          error.message.toString(),
-        );
-        return sendErrorResponse({
-          status: httpStatus.HTTP_500_INTERNAL_SERVER_ERROR,
-          title: "Error: unhandled error",
-          detail:
-            "An unhandled error occurred on the server. Please try again later.",
-        });
-    }
-  })
+            title: "Error: unhandled error",
+            detail:
+              "An unhandled error occurred on the server. Please try again later.",
+          });
+      }
+    },
+  )
   .group("/v1", (app) =>
     app
       .guard({
