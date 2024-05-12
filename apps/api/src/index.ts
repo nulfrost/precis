@@ -282,6 +282,13 @@ new Elysia({ name: "Precis API" })
         },
       ),
   )
+  .get(
+    "/",
+    () => `
+      Hello, friend! Check out this project @ https://precis.dev
+      uptime: ${process.uptime()}
+    `,
+  )
   .all("*", () => {
     throw new NotFoundError();
   })
