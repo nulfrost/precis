@@ -31,7 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-gray-50 flex flex-col h-full">
         <Navbar user={user} />
-        <main className="max-w-7xl mx-auto flex-1">{children}</main>
+        <main className="max-w-7xl mx-auto flex-1 w-full">{children}</main>
         <Footer />
         <ScrollRestoration />
         <Scripts />

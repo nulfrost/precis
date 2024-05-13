@@ -22,14 +22,13 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
     "dev": {
-      "dependsOn": ["^db:push"],
       "cache": false,
       "persistent": true,
       "dotEnv": [".env"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
     },
     "db:migrate": {
       "cache": false,

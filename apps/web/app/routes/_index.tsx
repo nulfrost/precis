@@ -1,4 +1,9 @@
-import { LinksFunction, MetaFunction } from "@remix-run/node";
+import {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import { authenticator } from "../services/auth.server";
 
 export const meta: MetaFunction = () => [
   {
@@ -45,6 +50,55 @@ export const links: LinksFunction = () => [
 `,
   },
 ];
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  await authenticator.isAuthenticated(request, {
+    successRedirect: "/dashboard",
+  });
+  return null;
+}
+
 export default function Index() {
-  return <div>test</div>;
+  return (
+    <div className="mt-20 px-5 2xl:px-0">
+      <section className="text-center mb-40">
+        <h1 className="font-bold text-2xl xl:text-4xl">Precis</h1>
+        <p className="text-md xl:text-xl">
+          An easy way for you to create and add your own personal guestbook to
+          your website using our API.
+        </p>
+      </section>
+      <section>
+        <h2 className="font-bold text-xl xl:text-2xl mt-10 text-center mb-4">
+          Getting started is easy
+        </h2>
+        <ul className="grid [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))] gap-4">
+          {[
+            {
+              text: "Create an account by logging in with your GitHub account",
+              icon: "github",
+            },
+            {
+              text: "Copy your uniquely generated credentials into your project",
+              icon: "copy",
+            },
+            {
+              text: "Make requests to or pull data from your own API endpoint",
+              icon: "grip",
+            },
+          ].map((step, index) => (
+            <li
+              key={index}
+              className="bg-white shadow-sm border border-gray-100 rounded-md p-5"
+            >
+              <span
+                className={`i-lucide-${step.icon} inline-block h-6 w-6`}
+              ></span>
+              <p className="text-gray-500">{step.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
 }
