@@ -202,7 +202,7 @@ func main() {
     jsonBody := []byte(\`{"name": "John Doe", "message": "Hello, World!"}\`)
 	bodyReader := bytes.NewReader(jsonBody)
 
-	req, err := http.NewRequest(http.MethodPost, "http://localhost:4000/api/v1/guestbooks/ul04oyvi3mz8axxoh0d0axac/messages", bodyReader)
+	req, err := http.NewRequest(http.MethodPost, "${guestbook?.api_url}", bodyReader)
 	if err != nil {
 		log.Fatal(err)
 	}
