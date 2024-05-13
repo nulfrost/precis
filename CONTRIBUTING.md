@@ -2,6 +2,12 @@
 
 Thank you for taking the time to contribute! Feel free to open issues or pull requests for any improvements or bugs you find.
 
+## Install Bun
+
+```bash
+https://bun.sh/
+```
+
 ## Clone Repository
 
 ```bash
@@ -17,7 +23,7 @@ Go to the project directory
 Install dependencies
 
 ```bash
-  pnpm install
+  bun install
 ```
 
 ## Environment Variables
@@ -28,6 +34,6 @@ Make a copy of the `.env.example` file and rename it to `.env`. Fill in the nece
 
 Depending on what you're improving or fixing, you can run the following commands:
 
-- `pnpm dev` - Run the API, Drizzle Studio and the Frontend
-- `pnpm dev:web` - Run the frontend only
-- `pnpm dev:api` - Run the API only
+- `bun run dev` - Run the API, Drizzle Studio and the Frontend
+- `bun run dev:web` - Run the frontend only
+- `bun run dev:api` - Run the API only
