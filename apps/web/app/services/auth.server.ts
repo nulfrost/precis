@@ -45,7 +45,7 @@ const gitHubStrategy = new GitHubStrategy(
           });
 
         await tx.update(schema.guestbooks).set({
-          api_url: `${process.env.API_URL}/api/v1/guestbooks/${guestbook.id}/messages`,
+          api_url: `${process.env.API_URL}/v1/guestbooks/${guestbook.id}/messages`,
         });
 
         return user;
