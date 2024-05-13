@@ -11,7 +11,7 @@ export function Navbar(props: NavbarProps) {
   const isSubmitting = fetcher.state !== "idle";
 
   return (
-    <header className="bg-white shadow-sm px-5 xl:px-0">
+    <header className="bg-white shadow-sm px-5 2xl:px-0">
       <div className="max-w-7xl mx-auto flex py-3 items-center">
         <div className="flex items-center gap-2">
           <h1 className="font-semibold text-lg">precis</h1>
