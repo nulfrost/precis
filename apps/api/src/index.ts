@@ -1,4 +1,5 @@
 import { Elysia, NotFoundError, t } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { and, asc, db, desc, eq, schema } from "@precis/database";
 import {
   AuthenticationError,
@@ -35,6 +36,13 @@ const log = createPinoLogger({
 });
 
 new Elysia({ name: "Precis API" })
+  .use(
+    cors({
+      methods: ["GET", "POST"],
+      allowedHeaders: ["x-precis-api-key"],
+      origin: /.*\.precis\.dev/,
+    }),
+  )
   .use(helmet())
   .use(ip())
   .use(HttpStatusCode())
