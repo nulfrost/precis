@@ -40,7 +40,8 @@ new Elysia({ name: "Precis API" })
     cors({
       methods: ["GET", "POST"],
       allowedHeaders: ["x-precis-api-key"],
-      origin: /.*\.precis\.dev/,
+      origin: "https://precis.dev",
+      credentials: false,
     }),
   )
   .use(helmet())
